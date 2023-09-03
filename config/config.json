@@ -1,0 +1,32 @@
+{
+  "development": {
+    "username": "scadiota",
+    "password": "1234567",
+    "database": "mqtt",
+    "host": "db",
+    "dialect": "postgres",
+    "operatorsAliases": false,
+    "logging": false,
+    "port":5432
+  },
+  "test": {
+    "username": "scadiota",
+    "password": "1234567",
+    "database": "mqtt",
+    "host": "db",
+    "dialect": "postgres",
+    "operatorsAliases": false,
+    "logging": false,
+    "port":5432
+  },
+  "production": {
+    "username": "scadiota",
+    "password": "1234567",
+    "database": "mqtt",
+    "host": "db",
+    "dialect": "postgres",
+    "operatorsAliases": false,
+    "logging": false,
+    "port":5432
+  }
+}
