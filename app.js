@@ -6,7 +6,6 @@ const bodyParser = require('body-parser');
 var logger = require('morgan');
 const mqtt = require('./services/mqtt');
 
-
 var signal = require('./routes/signal'); 
 var device = require('./routes/device');
 var historics = require('./routes/historics');

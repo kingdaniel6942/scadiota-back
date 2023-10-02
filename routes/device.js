@@ -237,12 +237,9 @@ router
 
         if(!device){
         	throw "Devide not found with uuid: " + uuid;
-        	return -1;
         }
 
-        await device.update({state:'DISABLED'});
-
-        var result = await device.destroy();
+        var result = await device.update({state:'DISABLED'});
         res.send({success:result});
 
     }catch(err){

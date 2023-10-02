@@ -176,13 +176,14 @@ router
             }
         })
 
-        var result = signal.destroy();
+        var result = await signal.update({state:'DISABLED'});
         res.send({success:result});
 
     }catch(err){
 
         console.log({error:err});
         res.send({error:err});
+
     }
 })
 

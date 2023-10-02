@@ -2,30 +2,37 @@ var models  		= require('../models');
 var sequelize 		= require('sequelize');
 var mqtt            = require('mqtt'); //https://www.npmjs.com/package/mqtt
 var Topic           = '#'; //subscribe to all topics
-var Broker_URL      = 'mqtt://localhost';
+var Broker_URL      = 'mqtt://mqtt';
 
 var options = {
 	clientId: 'MyMQTT',
 	port: 1883,
-	username: 'mosquipwd',
-	password: '7313452',	
+	username: 'admin',
+	password: '94561wecwecuheiew64654h46ew',	
 	keepalive : 60
 };
 
+var client  = mqtt.connect(Broker_URL, options);
+client.on('connect', mqtt_connect);
+client.on('reconnect', mqtt_reconnect);
+client.on('error', mqtt_error);
+client.on('message', mqtt_messsageReceived);
+client.on('close', mqtt_close);
+
 function mqtt_connect() {
-    //console.log("Connecting MQTT");
+    console.log("Connecting MQTT");
     client.subscribe(Topic, mqtt_subscribe);
 };
 
 function mqtt_subscribe(err, granted) {
-   // console.log("Subscribed to " + Topic);
+    console.log("Subscribed to " + Topic);
     if (err) {console.log(err);}
 };
 
 function mqtt_reconnect(err) {
-    //console.log("Reconnect MQTT");
+    console.log("Reconnect MQTT");
     //if (err) {console.log(err);}
-	client  = mqtt.connect(Broker_URL, options);
+	//client  = mqtt.connect(Broker_URL, options);
 };
 
 function mqtt_error(err) {
@@ -40,7 +47,7 @@ function after_publish() {
 function mqtt_messsageReceived(uuid, message, packet) {
 	var message_str = message.toString(); //convert byte array to string
 	message_str = message_str.replace(/\n$/, ''); //remove new line
-    //console.log("Mensaje recibido!");
+    console.log("Mensaje recibido!");
     //console.log(uuid, message_str, packet);
     var resp = insertData(uuid,message_str);
     //console.log(resp);
@@ -53,15 +60,29 @@ function mqtt_close() {
 async function insertData(uuid, data){
     var time = data.split('@')[1];
     var value = data.split('@')[0];
+    var uuidSignal = uuid.split('/')[1];
 
-    //console.log(data,time,value)
+    console.log(time)
+    console.log(value)
+    console.log(uuidSignal)
 
     var dataInsert;
     
     try{
+
+        if(!uuidSignal){
+
+            throw "Error, uuid not found";
+        }
+    
+        if(!time){
+    
+            time = new Date();
+        }
+
         var signal = await models.Signal.findOne({
             where:{
-                uuid: uuid
+                uuid: uuidSignal
             },
             include:[
                 {
@@ -72,8 +93,10 @@ async function insertData(uuid, data){
         })
     
         if(!signal){
-            return {error_mqtt: "Signal uuid does not exist"};
+
+            throw {error_mqtt: "Signal uuid does not exist"};
         }else{
+
             if(signal.signalTemplate.signalType == 'ANALOG'){
                 dataInsert = parseFloat(value);
                 await models.HistoricAnalog.create({
@@ -97,10 +120,11 @@ async function insertData(uuid, data){
                 })
             }
 
-            return {success_mqtt: "data inserted"}
+            throw {success_mqtt: "data inserted"}
         }
     }
     catch(error){
+        console.log(error.message)
         return {error_mqtt:error}
     }
 }
